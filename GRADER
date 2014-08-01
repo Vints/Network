@@ -1,0 +1,139 @@
+                                     GRADER
+
+Name of student running submit: Youri Park
+Login of student running submit: cs61b-ui
+
+Second team member's name: Vincent Lo
+Second team member's login: cs61b-aia
+
+Third team member's name (if any):
+Third team member's login:
+
+IMPORTANT:  Once you've submitted Project 2 once, the same team member should
+submit always.  If a different teammate must submit, inform cs61b@cory.eecs of
+all the details.  Include a complete list of team members, and let us know
+which submission you want graded.
+
+If you've submitted your project once, or even written a substantial amount of
+code together, you may not change partners without the permission of the
+instructor.
+===============================================================================
+Does your program compile without errors?
+Answer: Yes.
+
+Have you tested your program on the 61B lab machines?
+Answer: Yes.
+
+Did you successfully implement game tree search?  Did you successfully
+implement alpha-beta pruning?  Are there any limitations on it?  What is the
+default number of search levels set by the one-parameter MachinePlayer
+constructor (or is it a variable-depth search)?
+Answer: Yes. We don't think there are limitations on it. The default number of search levels set by the one -parameter MachinePlayer constructor is 3.
+
+Describe your board evaluation function in some detail.
+Answer: Our eval function will return the max score for boards that win in the fewest moves possible (except it fails test 2 of test 6 so maybe not). Also, it should weigh boards lower when we lose faster. For other boards, it will just return a score of 0.
+
+Does your MachinePlayer use any special method of choosing the first few moves?
+Answer: No.
+
+Is there anything else the graders should know to help them read your project?
+Answer: No.
+
+
+Describe the classes, modules, and interfaces you designed before and while you
+implemented the project.  Your description should include:
+  -  A list of the classes your program uses.
+  -  A list of each of the "modules" used in or by MachinePlayer, similar to
+     the list in the "Teamwork" section of the README (but hopefully more
+     detailed).  (If you're using a list class, that should probably count as
+     a separate module.)
+  -  For each module, list the class(es) the module is implemented in.
+  -  For each module, say which of your team members implemented it.
+  -  For each module, describe its interface--specifically, the prototype and
+     behavior of each method that is available for external callers (outside
+     the module) to call.  Don't include methods that are only meant to be
+     called from within the module.
+
+     For each method, provide (1) a method prototype and (2) a complete,
+     unambiguous description of the behavior of the method/module.  This
+     description should also appear before the method in your code's comments.
+
+You will probably need to change some of your design decisions as you go; be
+sure to modify this file to reflect these changes before you submit your
+project.  Your design of classes and interfaces will be worth 10% of your
+grade.
+
+Answer:
+
+Classes:
+
+1. Best
+    public methods:
+      1. public Move getMove() returns the Best move
+      2. public double getScore() returns the Best score
+
+2. Square
+    public methods:
+      1. public int getX() returns the x value for "this" square on the board
+      2. public int getY() returns the y value for "this" square on the board
+      3. public Chip getChip() returns the Chip on "this" square and null if there is none
+      4. public void add(Chip chip) adds a Chip to "this" square
+      5. public void remove() removes the Chip at "this" location
+      6. public String toString() returns a string representation of "this" Square
+
+3. Chip
+    public methods:
+      1. public int getColor() returns the color (0 or 1) of "this" Chip
+      2. public Square getLocation() returns the Square that "this" Chip is located on
+      3. public void setLocation(Square location) sets the Square that the chip is being moved to. Does not check if the new location isValid.
+      4. public boolean equals(Chip a) returns a boolean that returns true if this and Chip "a" are located on the same Square, which by default means that the chips are equal because only one chip can be on a Square.
+      5. public String toString() returns a String representation of "this" Chip
+    
+4. GameBoard
+    public methods:
+      1. public Square getSquare(int x, int y) returns the Square at location x, y.
+      2. public void addChip(Chip chip, int x, int y) adds a chip to the board and updates the blackChips[] or whiteChips[], and numBlack or numWhite.
+      3. public void moveChip(Chip chip, int x, int y)  moves a chip from its old location to the new Square at x, y. Square.add(chip) takes care of updatingthe chip's location.
+      4. public int numChips(int color) returns the number of chips on the board of "color".
+      5. public GameBoard makeCopy() makes a copy of "this" GameBoard and returns the copy.
+      6. public void makeMove(int color, Move move) makes a move, whether the move requires an addition of a chip or movement of a chip. Assumes that you only input a Move "move" that isValidMove, the method makeMove does not check if it is a valid move for you.
+      7. public String toString() is a toString method for GameBoard, prints out the entire board based on what the contents of the Sqares in the board are.
+5. MachinePlayer
+    public methods:
+      1. private Move makeCopyOfMove(Move m) makes a copy of the move "m" and returns it.
+
+
+Modules of MachinePlayer:
+
+1. Determining if a move is valid and generating list of valid moves
+    - Implemented in GameBoard
+    - Implemented by Youri Park
+    - Interface:
+      1. public boolean isValidMove(int color, Move move) checks if "location" is a valid move for "color" on "this" GameBoard. Returns true if valid, false otherwise.
+      2. public Move[] validMoves (int color) returns an array of Move objects representing a list of valid moves for player "color". All valid moves are at the beginning of the array, and invalid moves (null) are at the end.
+2. Finding chips of the same color that form connections
+    - Implemented in GameBoard
+    - Implemented by Youri Park and Vincent Lo
+    - Interface:
+      1. public boolean isConnected(Chip a, Chip b) checks if Chip a and Chip b are connected horizontally, vertically, or diagonally. Returns true if they are connected in any of those ways and are not blocked by a chip of an opposing
+      color. Returns false otherwise.
+      2. public Chip[] connectedChips(Chip chip) goes through the entire board to find chips of the same color as "chip" and then checks to see if "chip" and the other chips of the same color are connected. connectedChips() returns a Chip[] that only contains the chips that "chip" is connected to.
+3. Determining if there is a network for a given player
+    - Implemented in GameBoard
+    - Implemented by Youri Park
+    - Interface:
+      1. public boolean hasNetwork(int color) returns true if "this" GameBoard has a network for the "color".
+4. Computing evaluation function for a board
+    - Implemented in MachinePlayer and GameBoard
+    - Implemented by Vincent Lo and Youri Park
+    - Interface:
+      1. (in GameBoard) public int longestLength(int color) returns an int that describes the longest length of current connections for "color" that could possibly lead to a Network.
+      2. (in GameBoard) public int totalConnections(int color) returns an integer with the total number of connections in "color".
+      3. No other public methods
+5. Performing minimax tree search
+    - Implemented in MachinePlayer
+    - Implemented by Vincent Lo and Youri Park
+    - Interface:
+      1. public Move chooseMove() returns a new move by "this" player.  Internally records the move (updates the internal game board) as a move by "this" player.
+      2. public boolean opponentMove(Move m) if the Move m is legal, records the move as a move by the opponent (updates the internal game board) and returns true. If the move is illegal, returns false without modifying the internal state of "this" player.  This method allows your opponents to inform you of their moves.
+      3. public boolean forceMove(Move m) if the Move m is legal, records the move as a move by "this" player (updates the internal game board) and returns true.  If the move is illegal, returns false without modifying the internal state of "this" player. This method is used to help set up "Network problems" for your player to solve.
